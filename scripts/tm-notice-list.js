@@ -31,7 +31,7 @@
             await getNoticeList(document, spider, notice_type_id).then( // 分析页面获得公告列表的数据
                 noticeList => postNoticeList(noticeList, post_url) // 通过XHR发送爬取结果数据
             ).then(
-                response => console.log(response), // 分析XHR结果，如果全部数据重复，说明页面无更新，需要想办法退出main()
+                response => console.log(response), // #TODO: 分析XHR结果，如果全部数据重复，说明页面无更新，需要想办法退出main()
                 error => console.error(error)
             );
 
