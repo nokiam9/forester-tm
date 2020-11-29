@@ -52,8 +52,8 @@
         return new Promise((resolve, reject)=> {
             const first_notice_selector = '#searchResult > table > tbody > tr:nth-child(3)';
             const content_base_url = 'https://b2b.10086.cn/b2b/main/viewNoticeContent.html?noticeBean.id=';
+            const now = new Date();
 
-            let now = new Date();
             let notices = [];
             let line = listDoc.querySelector(first_notice_selector); // 提取第一行notice
             while (line) {
@@ -72,13 +72,13 @@
 
             // 新开窗口提取公告内容文本等数据
             (async function getContentFromList(){
-                let ctw = window.open(); // 打开一个临时窗口，用于提取内容文本，循环使用以节约资源
+                const ctw = window.open(); // 打开一个临时窗口，用于提取内容文本，循环使用以节约资源
 
-                for (let i in notices) {
-                    let url = content_base_url + notices[i].nid;
+                for (let x of notices) {
+                    const url = content_base_url + x.nid;
                     await getNoticeContent(ctw, url).then(function(content){
-                        Object.assign(notices[i], {notice_content : content}); // 追加公告内容，后续增加附件下载功能
-                        console.log('Info(getContentList): nid=', notices[i].nid, ', title=',notices[i].title, ',length=', notices[i].notice_content.length);
+                        Object.assign(x, {notice_content : content}); // 追加公告内容，后续增加附件下载功能
+                        console.log('Info(getContentList): nid=', x.nid, ', title=',x.title, ',length=', x.notice_content.length);
                     });
                 };
                 ctw.close();
@@ -92,9 +92,9 @@
            (async function (){
                const selector_id = '#tableWrap';
 
-               handle.location.assign(url); // 打开内容网页，设置计数器等待指定内容出现
+               handle.location.assign(url); // 打开内容网页
                console.log('Info(getContent): Open window with url=', url);
-               await waitforNode(handle, selector_id).then(
+               await waitforNode(handle, selector_id).then( //异步等待指定内容出现
                    doc => resolve(doc.body.innerText.trim()),
                    error => reject(error)
                );
@@ -135,9 +135,7 @@
 
             // console.log('Debug(waitforNode): start looking for node with ', selector_id);
             let retry_cnt = 0;
-            let myVar = setInterval(function(){myTimer()}, retry_delay);
-
-            function myTimer() {
+            setInterval(function myVar(){
                 if (handle.document.querySelector(selector_id)) {
                     clearInterval(myVar);
                     resolve(handle.document);
@@ -145,7 +143,7 @@
                     clearInterval(myVar);
                     reject('Error(waitforNode->myTimer): Failed searching for node=', selector_id);
                 } else retry_cnt++;
-            }
+            }, retry_delay);
         })
     }
 
