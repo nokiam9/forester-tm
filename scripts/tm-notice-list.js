@@ -70,47 +70,36 @@
                 line = line.nextElementSibling; // 循环提取下一行
             };
 
-            // 采用异步模式新开窗口提取公告内容文本等数据
+            // 新开窗口提取公告内容文本等数据
             (async function getContentFromList(){
                 let ctw = window.open(); // 打开一个临时窗口，用于提取内容文本，循环使用以节约资源
 
                 for (let i in notices) {
                     let url = content_base_url + notices[i].nid;
                     await getNoticeContent(ctw, url).then(function(content){
-                        //console.log('Debug(getContentFromList): Result: nid=', notices[i].nid, ',length=', result.length);
-                        //debugger;
                         Object.assign(notices[i], {notice_content : content}); // 追加公告内容，后续增加附件下载功能
+                        console.log('Info(getContentList): nid=', notices[i].nid, ', title=',notices[i].title, ',length=', notices[i].notice_content.length);
                     });
                 };
                 ctw.close();
                 resolve(notices);
-            })(); //定义函数并立即执行
+            })(); //定义异步函数并立即执行
         })
     }
 
     function getNoticeContent(handle, url) {
-        return new Promise((resolve,reject)=>{
-            console.log('Debug(getContent): Start! url=', url);
-            const selector_id = '#tableWrap';
-            const retry_delay = 500;
-            const retry_limits = 5;
+        return new Promise((resolve,reject)=> {
+           (async function (){
+               const selector_id = '#tableWrap';
 
-            let retry_cnt = 0;
-            handle.location.assign(url); // 打开内容网页，设置计数器等待指定内容出现
-            let myVar2 = setInterval(function(){myTimer2()}, retry_delay);
-
-            function myTimer2(){
-                //console.log('Debug(getContent->myTimer): Start...');
-                if (handle.document.querySelector(selector_id)) {
-                    //console.log('Debug(getContent->myTimer): scrapy content successful! title=', handle.document.querySelector('#title').innerText);
-                    clearInterval(myVar2);
-                    resolve(handle.document.body.innerText.trim());
-                } else if (retry_cnt >= retry_limits) {
-                    clearInterval(myVar2);
-                    reject('Warn(getContent->myTimer): scrapy content html timeout! url=', url);
-                } else retry_cnt++;
-            };
-        })
+               handle.location.assign(url); // 打开内容网页，设置计数器等待指定内容出现
+               console.log('Info(getContent): Open window with url=', url);
+               await waitforNode(handle, selector_id).then(
+                   doc => resolve(doc.body.innerText.trim()),
+                   error => reject(error)
+               );
+           })(); // 定义异步函数并立即执行
+        });
     }
 
     // Func: 向XHR发送公告数据
@@ -144,7 +133,7 @@
             const retry_delay = 500;
             const retry_limits = 5;
 
-            console.log('Debug(waitforNode): start looking for node with ', selector_id);
+            // console.log('Debug(waitforNode): start looking for node with ', selector_id);
             let retry_cnt = 0;
             let myVar = setInterval(function(){myTimer()}, retry_delay);
 
