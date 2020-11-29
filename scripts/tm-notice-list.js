@@ -57,8 +57,7 @@
             console.log('Info(main): page_now=', page_now, '，爬取&发送数据');
 
             await getNoticeList(document, spider, notice_type_id).then( // 分析页面获得公告列表的数据
-                noticeList => postNoticeList(noticeList, post_url) // 通过XHR发送爬取结果数据
-            ).then(
+                noticeList => postNoticeList(noticeList, post_url)).then( // 通过XHR发送爬取结果数据
                 response => console.log(response), // #TODO: 分析XHR结果，如果全部数据重复，说明页面无更新，需要想办法退出main()
                 error => console.error(error)
             );
@@ -99,19 +98,21 @@
             };
 
             // 新开窗口提取公告内容文本等数据
-            (async function getContentFromList(){
+            (async () => {
                 const ctw = window.open(); // 打开一个临时窗口，用于提取内容文本，循环使用以节约资源
 
                 for (let x of notices) {
                     const url = content_base_url + x.nid;
-                    await getNoticeContent(ctw, url).then(function(content){
-                        Object.assign(x, {notice_content : content}); // 追加公告内容，后续增加附件下载功能
-                        console.log('Info(getContentList): nid=', x.nid, ', title=',x.title, ',length=', x.notice_content.length);
-                    });
+                    await getNoticeContent(ctw, url).then(
+                        function(content){
+                            Object.assign(x, {notice_content : content}); // 追加公告内容，后续增加附件下载功能
+                            console.log('Info(getContentList): nid=', x.nid, ', title=',x.title, ',length=', x.notice_content.length);
+                        }
+                    );
                 };
                 ctw.close();
                 resolve(notices);
-            })(); //定义异步函数并立即执行
+            })(); //定义异步、匿名、包裹函数，并立即执行
         })
     }
 
