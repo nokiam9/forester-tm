@@ -1,0 +1,9 @@
+nose
+rednose
+Jinja2==2.10.1
+flask==1.0.2
+flask-restful=0.3.8
+
+pyecharts==0.5.3
+supervisor==4.1
+gunicorn==19.9
