@@ -14,15 +14,43 @@
 (function() {
     'use strict';
 
-    const main = async function() {
+    /* 测试断点方式
+    const start_page_number = 1;
+
+    async function gotoPage(pageNumber){
+        const pageNumber_selector = '#pageNumber';
+        const go_button_selector = '#pageid2 > table > tbody > tr > td:nth-child(8) > input[type=button]';
+
+        if (isNaN(Number(pageNumber))) {
+            console.error('PageNumber error format!');
+        }
+        else if (Number(pageNumber) <= 1) {
+            pageNumber = 1;
+            // 默认首页，无动作
+        }
+        else {
+            // 手工强制刷新页面
+            debugger;
+            $(pageNumber_selector).val(Number(pageNumber));
+            alert('number sdf=', Number(pageNumber));
+            alert('val asd=', document.querySelector(pageNumber_selector).val());
+            $(go_button_selector).click();
+        }
+    } */
+
+    // main主程序入口
+    (async function main() {
         const spider = 'TM'; // TamperMonkey
         const notice_type_id = window.location.search.split('=')[1]; // 取出url的参数值 [1,2,3,7,8,16]
         const active_page_selector = 'a.current';
         const next_page_button_selector = '#pageid2 > table > tbody > tr > td:nth-child(4) > a';
         const post_url = 'http://127.0.0.1:3000/v1/notice';
 
+        //gotoPage(2);
+        //debugger;
+
         do {
-            await waitforNode(window, active_page_selector);
+            await waitForSelector(window, active_page_selector);
 
             // 提取当前活跃焦点的Page序号
             let page_now = Number(document.querySelector(active_page_selector).textContent);
@@ -38,14 +66,14 @@
             if (document.querySelector(next_page_button_selector)) { // 发现‘下一页’按钮
                 console.log('Info(main): Pause 5 seconds for next page');
                 await sleep(5000);
+                //gotoPage(page_now + 1);
                 $(next_page_button_selector)[0].onclick(); // 模拟click动作
             } else { // 找不到‘下一页’的按钮，说明页面已全部提取
                 console.log('Info(main): Scrapy data compeleted !!!');
                 return;
             }
         } while(1);
-    }
-    main();
+    })();
 
     // Func: 分析list页面，返回公告列表
     function getNoticeList(listDoc, spider, notice_type_id){
@@ -87,14 +115,14 @@
         })
     }
 
-    function getNoticeContent(handle, url) {
+    function getNoticeContent(page, url) {
         return new Promise((resolve,reject)=> {
            (async function (){
                const selector_id = '#tableWrap';
 
-               handle.location.assign(url); // 打开内容网页
+               page.location.assign(url); // 打开内容网页
                console.log('Info(getContent): Open window with url=', url);
-               await waitforNode(handle, selector_id).then( //异步等待指定内容出现
+               await waitForSelector(page, selector_id).then( //异步等待指定内容出现
                    doc => resolve(doc.body.innerText.trim()),
                    error => reject(error)
                );
@@ -128,7 +156,7 @@
         });
     }
 
-    function waitforNode(handle, selector_id){
+    function waitForSelector(page, id){
         return new Promise((resolve, reject)=> {
             const retry_delay = 500;
             const retry_limits = 5;
@@ -136,12 +164,12 @@
             // console.log('Debug(waitforNode): start looking for node with ', selector_id);
             let retry_cnt = 0;
             setInterval(function myVar(){
-                if (handle.document.querySelector(selector_id)) {
+                if (page.document.querySelector(id)) {
                     clearInterval(myVar);
-                    resolve(handle.document);
+                    resolve(page.document);
                 } else if (retry_cnt >= retry_limits) {
                     clearInterval(myVar);
-                    reject('Error(waitforNode->myTimer): Failed searching for node=', selector_id);
+                    reject('Error(waitForSelector->myTimer): Failed searching for node=', id);
                 } else retry_cnt++;
             }, retry_delay);
         })
