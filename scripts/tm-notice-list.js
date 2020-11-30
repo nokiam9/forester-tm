@@ -118,7 +118,7 @@
 
     function getNoticeContent(page, url) {
         return new Promise((resolve,reject)=> {
-           (async function (){
+           (async () => {
                const selector_id = '#tableWrap';
 
                page.location.assign(url); // 打开内容网页
