@@ -75,9 +75,14 @@ class Content(Resource):
         pass 
         return '', 200
 
+def hello():
+    return "Hello API of forester!"
+
 ##
 ## Actually setup the Api resource routing here
 ##
+app.add_url_rule('/', view_func=hello)
+
 api.add_resource(NoticeList, '/v1/notice')
 api.add_resource(Notice, '/v1/notice/<string:nid>')
 api.add_resource(Content, '/v1/notice/<string:nid>/content')

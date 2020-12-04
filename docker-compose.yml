@@ -27,9 +27,16 @@ services:
       - 127.0.0.1:8514:10514
 
   api:
-    image: nginx:1.12.2
+    build: 
+      context: api/
+    image: forester/api:${__VERSION__}
     container_name: forester-api
     restart: always
+    environment: 
+      - MONGODB_USERNAME=${F6R_MONGO_USERNAME}
+      - MONGODB_PASSWORD=${F6R_MONGO_PASSWORD}
+      - MONGODB_HOST=forester-mongo
+      - MONGODB_PORT=27017
 
     #volumes: 
       # - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
