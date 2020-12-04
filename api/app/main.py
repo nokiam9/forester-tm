@@ -1,7 +1,11 @@
+# -*- coding: utf-8 -*-
+
 from typing import ContextManager
-from flask import Flask
+from flask import Flask, request, jsonify
 from flask_restful import reqparse, abort, Api, Resource
-from flask_mongoengine import MongoEngine
+from models import db, BidNotice
+# from flask_mongoengine import MongoEngine
+import json
 
 # 初始化app，原型在flask，并从settings.py中提取自定义的类属性，包括MongoDB配置，debug配置等
 app = Flask(__name__,
@@ -10,7 +14,7 @@ app = Flask(__name__,
 app.config.from_pyfile(filename='settings.py')
 api = Api(app)
 
-db = MongoEngine()  # 初始化数据库连接db
+# db = MongoEngine()  # 初始化数据库连接db
 # 连接flask和mongoengine，注意db在models.py中初始化，参数设置已经从app.config中加载
 db.init_app(app)
 
@@ -37,10 +41,6 @@ def abort_if_todo_doesnt_exist(nid):
     if nid not in NOTICES:
         abort(404, message="NOTICES{} doesn't exist".format(nid))
 
-parser = reqparse.RequestParser()
-parser.add_argument('nid', type=str)
-parser.add_argument('title', type=str)
-
 # Notice
 #   show or insert a single item 
 class Notice(Resource):
@@ -50,10 +50,10 @@ class Notice(Resource):
         return 'get ok', 200
     
     def post(self, nid):        # insert a new item
-        parser = reqparse.RequestParser()
-        args = parser.parse_args()
-        print(args)
-        pass 
+        # data = 
+        json_data = json.loads(request.get_data().decode("utf-8"))
+        print(json_data)
+        # print(request.data.get_json())
         return 'post ok', 200          # 204 when duplicate
 
     def delete(self, nid):      # delete item is not supported
