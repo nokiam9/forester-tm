@@ -37,8 +37,8 @@ services:
     networks:
       - forester_network
     # Notes: you can update serveice ports for deployment.
-    # ports:
-      # - "8080:80"
+    ports:
+      - "9000:80"
     
     depends_on: 
       - log
@@ -87,8 +87,8 @@ services:
     networks:
       - forester_network
     # 仅用于单机开发和测试
-    # ports: 
-    #   - "47017:27017"
+    ports: 
+       - "47017:27017"
 
     depends_on: 
       - log  
