@@ -1,6 +1,6 @@
 # -*- coding: utf-8 -*-
 
-from typing import ContextManager
+# from typing import ContextManager
 from flask import Flask, request, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 from models import db, BidNotice
@@ -52,7 +52,8 @@ class Notice(Resource):
     def post(self, nid):        # insert a new item
         # data = 
         json_data = json.loads(request.get_data().decode("utf-8"))
-        print(json_data)
+        print('res=', BidNotice(title = json_data['title'], nid = json_data['nid']).save())
+        # print(json_data)
         # print(request.data.get_json())
         return 'post ok', 200          # 204 when duplicate
 

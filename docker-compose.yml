@@ -56,28 +56,28 @@ services:
         syslog-address: "tcp://127.0.0.1:8514"
         tag: "api"
 
-  # proxy:
-  #   image: nginx:1.12.2
-  #   container_name: forester-proxy
-  #   restart: always
+  proxy:
+    image: nginx:1.12.2
+    container_name: forester-proxy
+    restart: always
 
-  #   volumes: 
-  #     - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
+    volumes: 
+      - ./proxy/nginx.conf:/etc/nginx/nginx.conf:ro
 
-  #   networks:
-  #     - forester_network
-  #   # Notes: you can update serveice ports for deployment.
-  #   ports:
-  #     - "8080:80"
+    networks:
+      - forester_network
+    # Notes: you can update serveice ports for deployment.
+    ports:
+      - "8080:80"
     
-  #   depends_on: 
-  #     - log
+    depends_on: 
+      - log
       
-  #   logging:
-  #     driver: "syslog"
-  #     options:  
-  #       syslog-address: "tcp://127.0.0.1:8514"
-  #       tag: "proxy"
+    logging:
+      driver: "syslog"
+      options:  
+        syslog-address: "tcp://127.0.0.1:8514"
+        tag: "proxy"
 
   mongo:
     image: mongo:3.6
@@ -106,36 +106,36 @@ services:
         syslog-address: "tcp://127.0.0.1:8514"
         tag: "mongo"
 
-  # flask:
-  #   build:
-  #     context: flask/
-  #   image: forester/flask:${__VERSION__}
-  #   container_name: forester-flask
-  #   restart: always
-  #   environment: 
-  #     - MONGODB_USERNAME=${F6R_MONGO_USERNAME}
-  #     - MONGODB_PASSWORD=${F6R_MONGO_PASSWORD}
-  #     - MONGODB_HOST=forester-mongo
-  #     - MONGODB_PORT=27017
+  flask:
+    build:
+      context: flask/
+    image: forester/flask:${__VERSION__}
+    container_name: forester-flask
+    restart: always
+    environment: 
+      - MONGODB_USERNAME=${F6R_MONGO_USERNAME}
+      - MONGODB_PASSWORD=${F6R_MONGO_PASSWORD}
+      - MONGODB_HOST=forester-mongo
+      - MONGODB_PORT=27017
 
-  #   volumes:
-  #     # Notice: set host volume for attachment download
-  #     - ${__DATA_VOLUME_ROOT__}/download:/download
+    volumes:
+      # Notice: set host volume for attachment download
+      - ${__DATA_VOLUME_ROOT__}/download:/download
 
-  #   networks:
-  #     - forester_network
-  #   # 仅用于单机测试
-  #   # ports:
-  #   #   - "8080:8000"
+    networks:
+      - forester_network
+    # 仅用于单机测试
+    # ports:
+    #   - "8080:8000"
 
-  #   depends_on: 
-  #     - log
+    depends_on: 
+      - log
       
-  #   logging:
-  #     driver: "syslog"
-  #     options:  
-  #       syslog-address: "tcp://127.0.0.1:8514"
-  #       tag: "flask"
+    logging:
+      driver: "syslog"
+      options:  
+        syslog-address: "tcp://127.0.0.1:8514"
+        tag: "flask"
   
 networks:
   forester_network:

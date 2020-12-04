@@ -15,8 +15,8 @@ MONGODB_SETTINGS = {  # for local test
     'db': 'cmccb2b',
     'username': 'root',
     'password': 'forester',
-    'host': 'forester-mongo',
-    'port': 27017,
+    'host': 'localhost',
+    'port': 47017,
     'connect': False,  # set for pymongo bug fix
     'authentication_source': 'admin', # set authentication source database， default is MONGODB_NAME
 }
