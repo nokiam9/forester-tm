@@ -1,6 +1,7 @@
 from typing import ContextManager
 from flask import Flask
 from flask_restful import reqparse, abort, Api, Resource
+from flask_mongoengine import MongoEngine
 
 # 初始化app，原型在flask，并从settings.py中提取自定义的类属性，包括MongoDB配置，debug配置等
 app = Flask(__name__,
@@ -8,6 +9,10 @@ app = Flask(__name__,
             template_folder='templates')
 app.config.from_pyfile(filename='settings.py')
 api = Api(app)
+
+db = MongoEngine()  # 初始化数据库连接db
+# 连接flask和mongoengine，注意db在models.py中初始化，参数设置已经从app.config中加载
+db.init_app(app)
 
 NOTICE_TYPE_CONFIG = {
     '0': '全部招标公告',
@@ -75,13 +80,16 @@ class Content(Resource):
         pass 
         return '', 200
 
-def hello():
-    return "Hello API of forester!"
+class Hello(Resource):
+    def get(self):
+        return "Hello API of forester!"
+
 
 ##
 ## Actually setup the Api resource routing here
 ##
-app.add_url_rule('/', view_func=hello)
+# app.add_url_rule('/', view_func=hello)
+api.add_resource(Hello, '/')
 
 api.add_resource(NoticeList, '/v1/notice')
 api.add_resource(Notice, '/v1/notice/<string:nid>')
