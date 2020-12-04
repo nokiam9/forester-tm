@@ -91,7 +91,6 @@ services:
     volumes:
       # Notice: set host volume for attachment download
       - ${__DATA_VOLUME_ROOT__}/download:/download
-      - ./wait-for-ip.sh:/wait-for-ip.sh:ro
 
     networks:
       - forester_network
