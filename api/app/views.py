@@ -9,12 +9,26 @@ from models import BidNoticeModel
 import json
 import datetime
 
+
+def notice2dict(cls):
+    return {
+        'title': cls.title,
+        'nid': cls.nid,
+        'notice_type': cls.notice_type,
+        'type_id': cls.type_id,
+        'spider': cls.spider,
+        'source_ch': cls.source_ch,
+        'published_date': cls.published_date.strftime('%Y-%m-%d %H:%M:%S'),
+        'timestamp': cls.timestamp.strftime('%Y-%m-%d %H:%M:%S'),
+        # 'notice_url': std.notice_url,
+        # 'notice_content': std.notice_content
+    }
+# pylint: disable=no-member
 class Notice(Resource):
     def get(self, nid):
-        # pylint: disable=no-member
-        x = BidNoticeModel.objects.filter(nid=nid).first()  
-        if (x):
-            return x.to_json(), 200
+        rec = BidNoticeModel.objects.filter(nid=nid).first()  
+        if (rec):
+            return json.dumps(rec, default=notice2dict), 200
         else :
             return 'no rec', 200
     
@@ -64,15 +78,15 @@ class Page(Resource):
         page_id = request.args.get('page_id', default=1, type=int)
         page_size = request.args.get('page_size', default=10, type=int)
         if type_id == '0' :
-            x = BidNoticeModel.objects(). \
+            records = BidNoticeModel.objects(). \
                 order_by("-published_date", "-timestamp"). \
                 paginate(page=page_id, per_page=page_size)
         else:
-            x = BidNoticeModel.objects(type_id=type_id). \
+            records = BidNoticeModel.objects(type_id=type_id). \
                 order_by("-published_date", "-timestamp"). \
                 paginate(page=page_id, per_page=page_size)
-        if (x):
-            return x.to_json(), 200
+        if (records):
+            return json.dumps(records.items, default=notice2dict), 200
         else :
             return 'no rec', 200
     
@@ -104,4 +118,4 @@ class Content(Resource):
 
 class Hello(Resource):
     def get(self):
-        return "Hello API of forester!"
+        return "Hi! Here is open api gateway of forester."

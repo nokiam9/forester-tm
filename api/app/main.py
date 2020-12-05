@@ -23,9 +23,9 @@ db.init_app(app)
 ##
 api.add_resource(Hello, '/')
 # URL: /v1/notice?type_id=2&page_id=0&page_size=10
-api.add_resource(Page, '/v1/notice/page/')
+api.add_resource(Page, '/v1/notice')
 # URL: /v1/notice/170348
-api.add_resource(Notice, '/v1/notice/<string:type_id>')
+api.add_resource(Notice, '/v1/notice/<string:nid>')
 # URL: /v1/notice/170348/content
 api.add_resource(Content, '/v1/notice/<string:nid>/content')
 
