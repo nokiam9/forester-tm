@@ -55,11 +55,36 @@ class Notice(Resource):
     def put(self, nid):         # update item is not supported  
         return '', 403
 
-# NoticeList
-#   shows a list of all items
-class NoticeList(Resource):
+# Page
+#   shows a page of all items, 
+#   URL: /v1/notice?type_id=2&page_id=0&page_size=10
+class Page(Resource):
     def get(self):              # list all item
-        return 'pass',200
+        type_id = request.args.get('type_id', default='0', type=str)
+        page_id = request.args.get('page_id', default=1, type=int)
+        page_size = request.args.get('page_size', default=10, type=int)
+        if type_id == '0' :
+            x = BidNoticeModel.objects(). \
+                order_by("-published_date", "-timestamp"). \
+                paginate(page=page_id, per_page=page_size)
+        else:
+            x = BidNoticeModel.objects(type_id=type_id). \
+                order_by("-published_date", "-timestamp"). \
+                paginate(page=page_id, per_page=page_size)
+        if (x):
+            return x.to_json(), 200
+        else :
+            return 'no rec', 200
+    
+    def post(self):
+        pass
+        return 'error', 200
+    
+    def delete(self):
+        return '', 403
+    
+    def put(self):
+        return '', 403
 
 
 # Content

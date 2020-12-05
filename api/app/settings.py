@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 import os 
 
-# MONGODB_SETTINGS = {
+# MONGODB_SETTINGS = {    # docker生产环境配置
 #     'db': 'cmccb2b',
 #     'username': os.getenv('MONGODB_USERNAME'),
 #     'password': os.getenv('MONGODB_PASSWORD'),
@@ -11,7 +11,7 @@ import os
 #     'authentication_source': 'admin', # set authentication source database， default is MONGODB_NAME
 # }
 
-MONGODB_SETTINGS = {  # for local test
+MONGODB_SETTINGS = {    # 本地测试环境配置
     'db': 'cmccb2b',
     'username': 'root',
     'password': 'forester',

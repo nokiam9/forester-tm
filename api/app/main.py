@@ -1,11 +1,10 @@
 # -*- coding: utf-8 -*-
 
-# from typing import ContextManager
 from flask import Flask, request, jsonify
 from flask_restful import reqparse, abort, Api, Resource
 
 from models import db
-from views import Notice, NoticeList, Content, Hello
+from views import Page, Notice, Content, Hello
 
 import logging
 
@@ -16,16 +15,22 @@ app = Flask(__name__,
 app.config.from_pyfile(filename='settings.py')
 api = Api(app)
 
-# 连接flask和mongoengine，注意db在models.py中初始化，参数设置已经从app.config中加载
+# 连接flask和mongoengine，注意Table定义在models.py，DB参数设置已经从app.config中加载
 db.init_app(app)
 
 ##
 ## Actually setup the Api resource routing here
 ##
 api.add_resource(Hello, '/')
-api.add_resource(NoticeList, '/v1/notice')
-api.add_resource(Notice, '/v1/notice/<string:nid>')
+# URL: /v1/notice?type_id=2&page_id=0&page_size=10
+api.add_resource(Page, '/v1/notice/page/')
+# URL: /v1/notice/170348
+api.add_resource(Notice, '/v1/notice/<string:type_id>')
+# URL: /v1/notice/170348/content
 api.add_resource(Content, '/v1/notice/<string:nid>/content')
+
+
+
 # api.add_resource('/notice/pagination/<string:type_id>', view_func=views.notice_page_view)
 
 if __name__ == "__main__":
