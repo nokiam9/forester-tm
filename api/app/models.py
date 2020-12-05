@@ -17,7 +17,7 @@ class BidNotice (db.Document):
         ],
     }
     _id = db.StringField()  # 必须增加，不然打开已存在的table时会报错
-    nid = db.StringField()
+    nid = db.StringField(unique=True) # TODO: 用于插入的唯一索引
     title = db.StringField()
     notice_type = db.StringField()
     source_ch = db.StringField()

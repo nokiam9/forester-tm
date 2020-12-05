@@ -6,6 +6,7 @@ from flask_restful import reqparse, abort, Api, Resource
 from models import db, BidNotice
 # from flask_mongoengine import MongoEngine
 import json
+import datetime
 
 # 初始化app，原型在flask，并从settings.py中提取自定义的类属性，包括MongoDB配置，debug配置等
 app = Flask(__name__,
@@ -52,8 +53,25 @@ class Notice(Resource):
     def post(self, nid):        # insert a new item
         # data = 
         json_data = json.loads(request.get_data().decode("utf-8"))
-        print('res=', BidNotice(title = json_data['title'], nid = json_data['nid']).save())
-        # print(json_data)
+        print(json_data)
+        BidNotice(
+            title = json_data['title'], 
+            nid = json_data['nid'],
+            notice_type = json_data['notice_type'],
+            type_id = json_data['type_id'], 
+            spider = json_data['spider'], 
+            source_ch = json_data['source_ch'],
+            notice_url = json_data['notice_url'],
+            notice_content = json_data['notice_content'], 
+            # TM POST为页面原始格式，API网关负责Date格式转换
+            published_date = datetime.datetime.strptime(json_data['published_date'], '%Y-%m-%d'),
+            # 时间戳取自API网关的当前时间
+            timestamp = datetime.datetime.utcnow() + datetime.timedelta(hours=8),
+            # reminded_time = null, 
+            # attachment_urls = null
+            # attachment_files = null
+        ).save()
+        
         # print(request.data.get_json())
         return 'post ok', 200          # 204 when duplicate
 
@@ -77,7 +95,7 @@ class Content(Resource):
         pass
         return '', 200
     
-    def post(Resource):
+    def post(self, Resource):
         pass 
         return '', 200
 
