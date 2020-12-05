@@ -1,7 +1,7 @@
 // ==UserScript==
 // @name         TM of notice list
 // @namespace    www.caogo.cn
-// @version      0.6
+// @version      0.7
 // @description  scrapy notice info from DOM
 // @author       sj0225@icloud.com
 // @match        https://b2b.10086.cn/b2b/main/listVendorNotice.html?noticeType=*
@@ -9,7 +9,7 @@
 // @grant        unsafewindow
 // @grant        GM_xmlhttpRequest
 // @grant        GM_openInTab
-// @connect      http://127.0.0.1:3000/*
+// @connect      127.0.0.1
 // ==/UserScript==
 
 (function() {
@@ -82,7 +82,6 @@
                     notice_type: line.children[1].textContent,
                     title: line.children[2].children[0].textContent,
                     published_date: line.children[3].textContent,
-                    timestamp: (new Date()).toJSON(),
                 }); // 获得公告列表的基础信息
                 line = line.nextElementSibling; // 循环提取下一行
             };
@@ -99,6 +98,7 @@
                     const url = content_base_url + x.nid;
                     await getNoticeContent(ctw, url).then(
                         content => {
+                            Object.assign(x, {notice_url: url});
                             Object.assign(x, {notice_content : content}); // 追加公告内容，后续增加附件下载功能
                             console.log('Info(getContentList): nid=', x.nid, ', title=',x.title, ',length=', x.notice_content.length);
                         }
@@ -132,12 +132,11 @@
             //console.log('cnt=', noticeList.length, ', ex=', noticeList[0].notice_content);
             //debugger;
 
-            // 成批post公告数据
-            /*
-            GM_xmlhttpRequest ({
+            for (let x of noticeList) { // 逐条post公告数据
+                GM_xmlhttpRequest ({
                 method:     "POST",
-                url:        url,
-                data:       noticeList,
+                url:        url + '/' + x.nid,
+                data:       JSON.stringify(x),
                 onload:     function (response){
                     console.log('XHR onload:', response.responseText);
                     resolve(response); // 如果全部数据重复，要想办法自动退出
@@ -146,7 +145,8 @@
                     reject('XHR onerror: network error!'); // POST网络故障时退出
                 }
             });
-            */
+            }
+
             resolve('Test: post records=' + noticeList.length); //Debug
         });
     }

@@ -3,7 +3,7 @@
 # from typing import ContextManager
 from flask import Flask, request, jsonify
 from flask_restful import reqparse, abort, Api, Resource
-from models import db, BidNotice
+from .models import db, BidNotice
 # from flask_mongoengine import MongoEngine
 import json
 import datetime
