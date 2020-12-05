@@ -11,7 +11,7 @@ import datetime
 
 class Notice(Resource):
     def get(self, nid):
-        x = BidNoticeModel.objects.filter(nid=nid).first()
+        x = BidNoticeModel.objects.filter(nid=nid).first()  # pylint: disable=no-member
         if (x):
             return x.to_json(), 200
         else :
@@ -65,7 +65,7 @@ class NoticeList(Resource):
 #   get and post contend of a notice
 class Content(Resource):
     def get(self, nid):
-        x = BidNoticeModel.objects.filter(nid=nid).first()
+        x = BidNoticeModel.objects.filter(nid=nid).first()  # pylint: disable=no-member
         if (x):
             return x.notice_content, 200
         else :

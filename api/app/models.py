@@ -14,6 +14,7 @@ class BidNoticeModel (db.Document):
         ],
     }
 
+    # pylint: disable=no-member
     _id = db.StringField()  # 必须增加，不然打开已存在的table时会报错
     nid = db.StringField(unique=True)               # 插入的唯一索引
     title = db.StringField()
@@ -24,7 +25,7 @@ class BidNoticeModel (db.Document):
     published_date = db.DateTimeField()
     timestamp = db.DateTimeField()
     reminded_time = db.DateTimeField()              # 用于xunsearch php
-    type_id = db.StringField()
+    type_id = db.StringField()  
     spider = db.StringField()
     attachment_urls = db.ListField(required=False)  # 暂未使用
     attachment_files = db.ListField(required=False) # 暂未使用
